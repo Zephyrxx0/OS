@@ -1,14 +1,13 @@
 #include <stdio.h>
 
 typedef struct {
-    int pid;        // Process ID
-    int bt;         // Burst Time
-    int pri;        // Priority
-    int wt;         // Waiting Time
-    int tat;        // Turnaround Time
+    int pid;        
+    int bt;         
+    int pri;        
+    int wt;         
+    int tat;        
 } Process;
 
-// Function to sort the processes by priority
 void sortByPriority(Process proc[], int n) {
     Process temp;
     for (int i = 0; i < n - 1; i++) {
@@ -22,19 +21,16 @@ void sortByPriority(Process proc[], int n) {
     }
 }
 
-// Function to calculate waiting time and turnaround time
 void calculateTimes(Process proc[], int n) {
-    proc[0].wt = 0;  // First process has 0 waiting time
-    proc[0].tat = proc[0].bt;  // Turnaround time is equal to burst time for first process
+    proc[0].wt = 0;  
+    proc[0].tat = proc[0].bt;  
 
-    // Calculate waiting time and turnaround time
     for (int i = 1; i < n; i++) {
-        proc[i].wt = proc[i - 1].wt + proc[i - 1].bt; // Waiting time = previous process waiting time + burst time
-        proc[i].tat = proc[i].wt + proc[i].bt;         // Turnaround time = waiting time + burst time
+        proc[i].wt = proc[i - 1].wt + proc[i - 1].bt; 
+        proc[i].tat = proc[i].wt + proc[i].bt;        
     }
 }
 
-// Function to display the Gantt Chart
 void displayGanttChart(Process proc[], int n) {
     printf("\nGantt Chart:\n");
     printf("|\t");
@@ -57,27 +53,22 @@ int main() {
     scanf("%d", &n);
 
     Process proc[n];
-
-    // Input process details (PID, Burst Time, Priority)
+    
     for (int i = 0; i < n; i++) {
         printf("\nEnter details for Process %d\n", i + 1);
-        proc[i].pid = i + 1;  // Process ID starts from 1
+        proc[i].pid = i + 1;  
         printf("Enter Burst Time: ");
         scanf("%d", &proc[i].bt);
         printf("Enter Priority: ");
         scanf("%d", &proc[i].pri);
     }
 
-    // Sort processes based on Priority
     sortByPriority(proc, n);
-
-    // Calculate Waiting Time and Turnaround Time
+    
     calculateTimes(proc, n);
-
-    // Display Gantt Chart
+    
     displayGanttChart(proc, n);
 
-    // Display process table with waiting and turnaround times
     printf("\nProcess Table (PID, Burst Time, Priority, Waiting Time, Turnaround Time):\n");
     for (int i = 0; i < n; i++) {
         printf("P%d\t%d\t\t%d\t\t%d\t\t%d\n", proc[i].pid, proc[i].bt, proc[i].pri, proc[i].wt, proc[i].tat);
