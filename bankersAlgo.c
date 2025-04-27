@@ -28,7 +28,7 @@ int isSafeState() {
                     if (need[i][j] > work[j])
                         break;
                 
-                if (j == num_resources) {  // If all needed resources can be satisfied
+                if (j == num_resources) {  
                     for (int k = 0; k < num_resources; k++)
                         work[k] += allocation[i][k];
                     safeSequence[count++] = i;
@@ -62,17 +62,15 @@ void requestResources(int process, int request[]) {
         }
     }
 
-    // Tentatively allocate resources
     for (int i = 0; i < num_resources; i++) {
         available[i] -= request[i];
         allocation[process][i] += request[i];
         need[process][i] -= request[i];
     }
 
-    // Check if the new state is safe
     if (!isSafeState()) {
         printf("Request cannot be granted as it leads to an unsafe state.\n");
-        for (int i = 0; i < num_resources; i++) { // Rollback
+        for (int i = 0; i < num_resources; i++) { 
             available[i] += request[i];
             allocation[process][i] -= request[i];
             need[process][i] += request[i];
