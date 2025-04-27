@@ -1,46 +1,50 @@
 #include <stdio.h>
-void findWaitingTime(int processes[], int n, int bt[], int wt[]){
-    wt[0] = 0;
+
+typedef struct {
+    int pid;
+    int bt;
+    int wt;
+    int tat;
+} Process;
+
+void findWaitingTime(Process proc[], int n) {
+    proc[0].wt = 0;
     for (int i = 1; i < n; i++)
-        wt[i] = bt[i - 1] + wt[i - 1];
+        proc[i].wt = proc[i-1].bt + proc[i-1].wt;
 }
-void findTurnAroundTime(int processes[], int n, int bt[], int wt[], int tat[]){
+
+void findTurnAroundTime(Process proc[], int n) {
     for (int i = 0; i < n; i++)
-        tat[i] = bt[i] + wt[i];
+        proc[i].tat = proc[i].bt + proc[i].wt;
 }
-void findAvgTime(int processes[], int n, int bt[]){
-    int wt[n], tat[n],total_wt = 0, total_tat = 0;;
-    findWaitingTime(processes, n, bt, wt);
-    findTurnAroundTime(processes, n, bt, wt, tat);
+
+void findAvgTime(Process proc[], int n) {
+    findWaitingTime(proc, n);
+    findTurnAroundTime(proc, n);
     printf("\nProcesses\tBurst Time\tWaiting Time\tTurn-Around Time\n");
 
-    
-    for (int i = 0; i < n; i++){
-        total_wt += wt[i];
-        total_tat += tat[i];
-        printf(" %d\t\t%d\t\t%d\t\t%d\n", i + 1, bt[i], wt[i], tat[i]);
+    int total_wt = 0, total_tat = 0;
+    for (int i = 0; i < n; i++) {
+        total_wt += proc[i].wt;
+        total_tat += proc[i].tat;
+        printf(" %d\t\t%d\t\t%d\t\t%d\n", proc[i].pid, proc[i].bt, proc[i].wt, proc[i].tat);
     }
 
-    float s = (float)total_wt/(float)n;
-    float t = (float)total_tat/(float)n;
-    
-    printf("Average waiting time: %.2f\n", s);
-    printf("Average turnaround time: %.2f\n", t);
-
+    printf("Average waiting time: %.2f\n", (float)total_wt / n);
+    printf("Average turnaround time: %.2f\n", (float)total_tat / n);
 }
-void ganttChart(int processes[], int n, int bt[], int wt[]){
-    int tat[n];
-    findTurnAroundTime(processes, n, bt, wt, tat);
+
+void ganttChart(Process proc[], int n) {
+    findTurnAroundTime(proc, n);
     printf("\nGantt Chart\n");
     printf("-------------------------------------------\n");
     printf("| ");
-    for (int i = 0; i < n; i++){
-        printf("P%d | ", processes[i]);
+    for (int i = 0; i < n; i++) {
+        printf("P%d | ", proc[i].pid);
     }
-    printf("\n");
-    printf("0");
-    for (int i = 0; i < n; i++){
-        printf("\t%d", tat[i]);
+    printf("\n0");
+    for (int i = 0; i < n; i++) {
+        printf("\t%d", proc[i].tat);
     }
     printf("\n");
 }
@@ -49,28 +53,28 @@ int main() {
     int n;
     printf("Enter the number of processes: ");
     scanf("%d", &n);
-    int processes[n], bt[n];
+    Process proc[n];
+
     printf("\nEnter burst time for each process:\n");
-    for (int i = 0; i < n; i++){
-        processes[i] = i + 1;
-        printf("Process %d: ", i + 1);
-        scanf("%d", &bt[i]);
+    for (int i = 0; i < n; i++) {
+        proc[i].pid = i + 1;
+        printf("Process %d: ", proc[i].pid);
+        scanf("%d", &proc[i].bt);
     }
 
-    for (int i = 0; i < n - 1; i++){
-        for (int j = 0; j < n - i - 1; j++ ){
-            if (bt[j]>bt[j+1]){
-                int temp = bt[j];
-                bt[j] = bt[j + 1];
-                bt[j + 1] = temp;
-                int tempProc = processes[j];
-                processes[j] = processes[j + 1];
-                processes[j + 1] = tempProc;
+    // Sort processes by burst time
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (proc[j].bt > proc[j+1].bt) {
+                Process temp = proc[j];
+                proc[j] = proc[j+1];
+                proc[j+1] = temp;
             }
         }
     }
 
-    findAvgTime(processes, n , bt);
-    ganttChart(processes, n, bt, bt);
+    findAvgTime(proc, n);
+    ganttChart(proc, n);
+
     return 0;
 }
