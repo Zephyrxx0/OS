@@ -1,0 +1,11 @@
+pidof
+jobs
+pwd 
+whoami 
+whoami&
+fg 
+bg 
+ps 
+ps -e
+kill
+sleep
